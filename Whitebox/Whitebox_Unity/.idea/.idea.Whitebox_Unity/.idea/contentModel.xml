@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Owner\.Rider2018.1\system\resharper-host\local\Transient\ReSharperHost\v12\SolutionCaches\_Whitebox_Unity.1269990659.00" t="ExcludeRecursive" />
+    <e p="E:\School\College\Spring2020\DGM3571_Story\Whitebox\Whitebox_Unity" t="IncludeRecursive">
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="SeniorGame" t="Include">
+          <e p="CharacterMovement" t="Include">
+            <e p="Scripts" t="Include">
+              <e p="ThirdPersonMovement.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
+      <e p="Whitebox_Unity.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
