@@ -4,10 +4,13 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class ThirdPersonMovement : MonoBehaviour
 {
-    /*public float ForwardSpeed, RotateSpeed;
-    public string ForwardAxis, RotateAxis;
+    public float ForwardSpeed, SideSpeed, RotateSpeed;
+    private float forwardAmount, sideAmount, headingAngle;
+    public string ForwardAxis, SideAxis;
+    public Transform Camera;
     private CharacterController _cc;
     private Vector3 _moveVec, _rotVec;
+    private Quaternion quat;
     
 
     private void Start()
@@ -20,18 +23,29 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         while (true)
         {
-            _moveVec = transform.forward*Input.GetAxis(ForwardAxis)*ForwardSpeed*Time.deltaTime;
-            _rotVec.Set(0,Input.GetAxis(RotateAxis) * RotateSpeed,0);
+            //Get  ForwardAxis
+            forwardAmount = Input.GetAxis(ForwardAxis);
+            //Get SideAxis
+            sideAmount = Input.GetAxis(SideAxis);
+            _moveVec = Camera.forward * forwardAmount * ForwardSpeed * Time.deltaTime
+                       + Camera.right * sideAmount * SideSpeed * Time.deltaTime;
+            _moveVec.y = 0;
             _cc.Move(_moveVec);
-            transform.Rotate(_rotVec);
+            if ((sideAmount >= .5f || sideAmount <= -.5f || forwardAmount >= .5f || forwardAmount <= -.5f))
+            {
+                headingAngle = Quaternion.LookRotation(_moveVec).eulerAngles.y;
+                _rotVec = new Vector3(transform.rotation.x, headingAngle, transform.rotation.z);
+                Debug.Log(_rotVec);
+                quat = Quaternion.Euler(_rotVec);
+                transform.rotation = Quaternion.Lerp(transform.rotation, quat, RotateSpeed * Time.deltaTime);
+                yield return new WaitForFixedUpdate();
+            }
             yield return new WaitForFixedUpdate();
+            
+
         }
-    }*/
-    private void Update()
-    {
-        if (Input.GetAxis("Horizontal") != 0)
-        {
-            Debug.Log(Input.GetAxis("Horizontal"));
-        }
+
     }
+
+
 }
