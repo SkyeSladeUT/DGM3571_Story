@@ -11,6 +11,7 @@ public class ThirdPersonMovement : MonoBehaviour
     private CharacterController _cc;
     private Vector3 _moveVec, _rotVec;
     private Quaternion quat;
+    public Targeting targetScript;
     
 
     private void Start()
@@ -31,11 +32,11 @@ public class ThirdPersonMovement : MonoBehaviour
                        + Camera.right * sideAmount * SideSpeed * Time.deltaTime;
             _moveVec.y = 0;
             _cc.Move(_moveVec);
-            if ((sideAmount >= .5f || sideAmount <= -.5f || forwardAmount >= .5f || forwardAmount <= -.5f))
+            if (!targetScript.targeting && (sideAmount >= .5f || sideAmount <= -.5f || forwardAmount >= .5f || forwardAmount <= -.5f))
             {
                 headingAngle = Quaternion.LookRotation(_moveVec).eulerAngles.y;
                 _rotVec = new Vector3(transform.rotation.x, headingAngle, transform.rotation.z);
-                Debug.Log(_rotVec);
+                //Debug.Log(_rotVec);
                 quat = Quaternion.Euler(_rotVec);
                 transform.rotation = Quaternion.Lerp(transform.rotation, quat, RotateSpeed * Time.deltaTime);
                 yield return new WaitForFixedUpdate();

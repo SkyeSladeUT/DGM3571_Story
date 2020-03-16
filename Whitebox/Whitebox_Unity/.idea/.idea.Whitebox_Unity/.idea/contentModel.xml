@@ -12,6 +12,11 @@
               <e p="ThridPersonCamera.cs" t="Include" />
             </e>
           </e>
+          <e p="ZTargetting" t="Include">
+            <e p="Enemy_Visible.cs" t="Include" />
+            <e p="In_Camera_View.cs" t="Include" />
+            <e p="Targeting.cs" t="Include" />
+          </e>
         </e>
       </e>
       <e p="Library" t="ExcludeRecursive" />
