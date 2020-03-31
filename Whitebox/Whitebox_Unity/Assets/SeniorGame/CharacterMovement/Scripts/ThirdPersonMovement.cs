@@ -32,7 +32,7 @@ public class ThirdPersonMovement : MonoBehaviour
                        + Camera.right * sideAmount * SideSpeed * Time.deltaTime;
             _moveVec.y = 0;
             _cc.Move(_moveVec);
-            if (!targetScript.targeting && (sideAmount >= .5f || sideAmount <= -.5f || forwardAmount >= .5f || forwardAmount <= -.5f))
+            if (!targetScript.targeting && (sideAmount >= .1f || sideAmount <= -.1f || forwardAmount >= .1f || forwardAmount <= -.1f))
             {
                 headingAngle = Quaternion.LookRotation(_moveVec).eulerAngles.y;
                 _rotVec = new Vector3(transform.rotation.x, headingAngle, transform.rotation.z);

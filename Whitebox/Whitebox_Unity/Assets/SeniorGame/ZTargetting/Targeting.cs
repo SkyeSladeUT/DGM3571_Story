@@ -19,6 +19,7 @@ public class Targeting : MonoBehaviour
     private Vector3 lookatvector;
     public GameObject targetIndicator;
     private Quaternion quat;
+    public TransformData currTargetObj;
 
     private void Start()
     {
@@ -127,9 +128,10 @@ public class Targeting : MonoBehaviour
     {
         while (running)
         {
-            yield return new WaitUntil(()=>Input.GetButtonUp("Target"));
+            yield return new WaitUntil(()=>Input.GetButtonDown("Target"));
             yield return new WaitForFixedUpdate();
             findClosest();
+            currTargetObj.SetTransform(currentTarget);
             targeting = true;
             while (targeting)
             {
@@ -140,8 +142,9 @@ public class Targeting : MonoBehaviour
                 if (!EnemiesInRange.Contains(currentTarget))
                 {
                     findClosest();
+                    currTargetObj.SetTransform(currentTarget);
                 }
-                else if (Input.GetButtonUp("Target"))
+                else if (Input.GetButtonDown("Target"))
                 {
                     targetIndicator.SetActive(false);
                     targetIndicator.transform.parent = null;
@@ -152,10 +155,12 @@ public class Targeting : MonoBehaviour
                     if (Input.GetAxisRaw("TargetChange") > 0)
                     {
                         findRight(currentTarget);
+                        currTargetObj.SetTransform(currentTarget);
                     }
                     else
                     {
                         findLeft(currentTarget);
+                        currTargetObj.SetTransform(currentTarget);
                     }
                 }
                 yield return new WaitForFixedUpdate();

@@ -12,6 +12,15 @@
               <e p="ThridPersonCamera.cs" t="Include" />
             </e>
           </e>
+          <e p="ScriptableObjects" t="Include">
+            <e p="TransformData.cs" t="Include" />
+            <e p="Vector3Data.cs" t="Include" />
+          </e>
+          <e p="Weapons" t="Include">
+            <e p="BowandArrow.cs" t="Include" />
+            <e p="WeaponBase.cs" t="Include" />
+            <e p="WeaponManager.cs" t="Include" />
+          </e>
           <e p="ZTargetting" t="Include">
             <e p="Enemy_Visible.cs" t="Include" />
             <e p="In_Camera_View.cs" t="Include" />
