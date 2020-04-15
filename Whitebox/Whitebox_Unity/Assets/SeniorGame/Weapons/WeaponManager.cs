@@ -10,6 +10,16 @@ public class WeaponManager : MonoBehaviour
     {
         currentWeapon.Initialize();
     }
+
+    public void WeaponDisable()
+    {
+        currentWeapon.End();
+    }
+
+    public void WeaponEnable()
+    {
+        currentWeapon.Initialize();
+    }
     
     
 }

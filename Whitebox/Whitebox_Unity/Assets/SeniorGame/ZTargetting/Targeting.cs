@@ -20,9 +20,11 @@ public class Targeting : MonoBehaviour
     public GameObject targetIndicator;
     private Quaternion quat;
     public TransformData currTargetObj;
+    private GameObject objtarget;
 
     private void Start()
     {
+        currTargetObj.transform = null;
         EnemiesInRange = new List<GameObject>();
         running = true;
         targeting = false;
@@ -36,6 +38,7 @@ public class Targeting : MonoBehaviour
         
         if (EnemiesInRange.Count <= 0)
         {
+            currTargetObj.transform = null;
             currentTarget = null;
             targeting = false;
             targetIndicator.transform.parent = null;
@@ -66,15 +69,22 @@ public class Targeting : MonoBehaviour
                 minIndex = i;
             }
         }
-        targetIndicator.SetActive(true);
-        targetIndicator.transform.parent = EnemiesInRange[minIndex].transform;
-        targetIndicator.transform.position = EnemiesInRange[minIndex].transform.position;
+
+        //targetIndicator.transform.parent = EnemiesInRange[minIndex].transform;
+        //targetIndicator.transform.position = EnemiesInRange[minIndex].transform.position;
         currentTarget = EnemiesInRange[minIndex];
+        targetIndicator.SetActive(true);
+        objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+        targetIndicator.transform.position = objtarget.transform.position;
     }
 
     private void findRight(GameObject ignoreObj = null)
     {
-        if (EnemiesInRange.Count <= 1) return;
+        if (EnemiesInRange.Count <= 1)
+        {
+            currTargetObj.transform = null;
+            return;
+        }
         CheckEnemies = EnemiesInRange;
         if (ignoreObj != null)
             CheckEnemies.Remove(ignoreObj);
@@ -93,14 +103,21 @@ public class Targeting : MonoBehaviour
                 minIndex = i;
             }
         }
-        targetIndicator.transform.parent = EnemiesInRange[minIndex].transform;
-        targetIndicator.transform.position = EnemiesInRange[minIndex].transform.position;
+
+        //targetIndicator.transform.parent = EnemiesInRange[minIndex].transform;
+        //targetIndicator.transform.position = EnemiesInRange[minIndex].transform.position;
         currentTarget = CheckEnemies[minIndex];
+        objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+        targetIndicator.transform.position = objtarget.transform.position;
     }
     
     private void findLeft(GameObject ignoreObj = null)
     {
-        if (EnemiesInRange.Count <= 1) return;
+        if (EnemiesInRange.Count <= 1)
+        {
+            currTargetObj.transform = null;
+            return;
+        }
         CheckEnemies = EnemiesInRange;
         if (ignoreObj != null)
             CheckEnemies.Remove(ignoreObj);
@@ -119,9 +136,12 @@ public class Targeting : MonoBehaviour
                 minIndex = i;
             }
         }
-        targetIndicator.transform.parent = EnemiesInRange[minIndex].transform;
-        targetIndicator.transform.position = EnemiesInRange[minIndex].transform.position;
+
+        //targetIndicator.transform.parent = EnemiesInRange[minIndex].transform;
+        //targetIndicator.transform.position = EnemiesInRange[minIndex].transform.position;
         currentTarget = CheckEnemies[minIndex];
+        objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+        targetIndicator.transform.position = objtarget.transform.position;
     }
 
     private IEnumerator TargetFunction()
@@ -131,7 +151,16 @@ public class Targeting : MonoBehaviour
             yield return new WaitUntil(()=>Input.GetButtonDown("Target"));
             yield return new WaitForFixedUpdate();
             findClosest();
-            currTargetObj.SetTransform(currentTarget);
+            if (currentTarget!= null && currentTarget.GetComponentInChildren<TargetObject>()!= null)
+            {
+                //Debug.Log("Different Target");
+                objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+                currTargetObj.SetTransform(objtarget.transform);
+            }
+            else
+            {
+                currTargetObj.SetTransform(currentTarget);
+            }
             targeting = true;
             while (targeting)
             {
@@ -139,31 +168,60 @@ public class Targeting : MonoBehaviour
                 lookatvector.y = 0;
                 quat = Quaternion.LookRotation(lookatvector);
                 transform.rotation = quat;
-                if (!EnemiesInRange.Contains(currentTarget))
-                {
-                    findClosest();
-                    currTargetObj.SetTransform(currentTarget);
-                }
-                else if (Input.GetButtonDown("Target"))
+                if (Input.GetButtonDown("Target"))
                 {
                     targetIndicator.SetActive(false);
                     targetIndicator.transform.parent = null;
                     targeting = false;
+                    currTargetObj.transform = null;
+                }
+                else if (!EnemiesInRange.Contains(currentTarget))
+                {
+                    findClosest();
+                    if (currentTarget!= null && currentTarget.GetComponentInChildren<TargetObject>()!= null)
+                    {
+                        //Debug.Log("Different Target");
+                        objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+                        currTargetObj.SetTransform(objtarget.transform);
+                    }
+                    else
+                    {
+                        currTargetObj.SetTransform(currentTarget);
+                    }
+                    //currTargetObj.SetTransform(currentTarget);
                 }
                 else if (Input.GetButtonDown("TargetChange"))
                 {
                     if (Input.GetAxisRaw("TargetChange") > 0)
                     {
                         findRight(currentTarget);
-                        currTargetObj.SetTransform(currentTarget);
+                        if (currentTarget!= null && currentTarget.GetComponentInChildren<TargetObject>()!= null)
+                        {
+                            //Debug.Log("Different Target");
+                            objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+                            currTargetObj.SetTransform(objtarget.transform);
+                        }
+                        else
+                        {
+                            currTargetObj.SetTransform(currentTarget);
+                        }
                     }
                     else
                     {
-                        findLeft(currentTarget);
-                        currTargetObj.SetTransform(currentTarget);
+                        findLeft(currentTarget); 
+                        if (currentTarget!= null && currentTarget.GetComponentInChildren<TargetObject>()!= null)
+                        {
+                            //Debug.Log("Different Target");
+                            objtarget = currentTarget.GetComponentInChildren<TargetObject>().gameObject;
+                            currTargetObj.SetTransform(objtarget.transform);
+                        }
+                        else
+                        {
+                            currTargetObj.SetTransform(currentTarget);
+                        }
                     }
                 }
-                yield return new WaitForFixedUpdate();
+                yield return new WaitForSeconds(.01f);
             }
 
         }

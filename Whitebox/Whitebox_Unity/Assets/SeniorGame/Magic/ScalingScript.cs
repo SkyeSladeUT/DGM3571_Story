@@ -1,32 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
-public class BowandArrow : WeaponBase
+public class ScalingScript : WeaponBase
 {
-    //hold e to increase power
-    //release e to shoot
-    //Shoots straight forward from player
-    
     private WaitForFixedUpdate _fixedUpdate = new WaitForFixedUpdate();
     private WaitUntil _waitforbutton;
-    public GameObject ArrowPrefab;
+    public GameObject MagicPrefab;
     public Transform InitPos;
-    private Rigidbody ArrowRB;
+    private Rigidbody SpellBall;
     public string useButton;
     private float currPower;
-    public float MaxPower, PowerIncreaseScale;
+    public float MaxPower, PowerIncreaseScale, ScaleIncreaseAmount, ScaleDecreaseAmount;
     private GameObject currArrow;
-    private Vector3 direction;
+    private Vector3 direction, finalScale, increaseScale, newScale, decreaseScale;
     public TransformData targetObj;
     public Transform camTrans;
     private Vector3 rotDirection, initRotation;
+    public LimitFloatData MagicAmount;
+    public BoolData MagicInUse;
+    public float decreaseSpeed;
+    
     
     public override void Initialize()
     {
         //any init stuff needed
         initRotation = transform.rotation.eulerAngles;
+        finalScale = MagicPrefab.transform.localScale;
+        increaseScale = new Vector3(ScaleIncreaseAmount, ScaleIncreaseAmount, ScaleIncreaseAmount);
+        decreaseScale = new Vector3(ScaleDecreaseAmount, ScaleDecreaseAmount, ScaleDecreaseAmount);
         _waitforbutton = new WaitUntil(CheckInput);
         currWeapon = true;
         StartCoroutine(Attack());
@@ -41,13 +43,15 @@ public class BowandArrow : WeaponBase
             rotDirection.y = transform.rotation.eulerAngles.y;
             transform.rotation = Quaternion.Euler(rotDirection);
             yield return _waitforbutton;
-            if (currWeapon)
+            MagicInUse.value = true;
+            if (currWeapon && MagicAmount.value > 0)
             {
                 currPower = 0;
-                currArrow = Instantiate(ArrowPrefab, InitPos);
+                currArrow = Instantiate(MagicPrefab, InitPos);
+                currArrow.transform.localScale = Vector3.zero;
                 currArrow.SetActive(true);
-                ArrowRB = currArrow.GetComponent<Rigidbody>();
-                while (Input.GetButton(useButton))
+                SpellBall = currArrow.GetComponent<Rigidbody>();
+                while (Input.GetButton(useButton) && MagicAmount.value > 0)
                 {
                     if (targetObj.transform != null)
                     {
@@ -59,20 +63,40 @@ public class BowandArrow : WeaponBase
                         rotDirection.x = camTrans.rotation.eulerAngles.x;
                         transform.rotation = Quaternion.Euler(rotDirection);
                     }
-
-                    Debug.Log("Current Power: " + currPower);
+                    
+                    //Debug.Log("Current Power: " + currPower);
                     currPower += Time.deltaTime * PowerIncreaseScale;
+                    MagicAmount.SubFloat(decreaseSpeed*Time.deltaTime);
                     if (currPower >= MaxPower)
                     {
                         currPower = MaxPower;
                     }
 
+                    if (currArrow.transform.localScale.x <= finalScale.x)
+                    {
+                        newScale = currArrow.transform.localScale + increaseScale*Time.deltaTime;
+                        currArrow.transform.localScale = newScale;
+                    }
+
                     yield return _fixedUpdate;
                 }
 
-                ArrowRB.constraints = RigidbodyConstraints.None;
+                SpellBall.constraints = RigidbodyConstraints.None;
                 currArrow.transform.parent = null;
-                ArrowRB.AddForce(transform.forward * currPower, ForceMode.Impulse);
+                SpellBall.AddForce(transform.forward * currPower, ForceMode.Impulse);
+                while (currArrow.transform.localScale.x > 0)
+                {
+                    newScale = currArrow.transform.localScale - decreaseScale * Time.deltaTime;
+                    currArrow.transform.localScale = newScale;
+                    yield return _fixedUpdate;
+                }
+
+                if (!currArrow.GetComponent<ScalingMagic>().hitObj)
+                {
+                    MagicInUse.value = false;
+                    Destroy(currArrow);
+                }
+
             }
 
         }

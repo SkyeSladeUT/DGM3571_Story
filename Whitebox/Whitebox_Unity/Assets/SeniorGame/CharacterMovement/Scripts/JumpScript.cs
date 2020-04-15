@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
-public class ThirdPersonMovement : MonoBehaviour
+public class JumpScript : MonoBehaviour
 {
     public float ForwardSpeed, SideSpeed, RotateSpeed, JumpSpeed, Gravity;
     private float forwardAmount, sideAmount, headingAngle, vSpeed;
@@ -10,7 +11,6 @@ public class ThirdPersonMovement : MonoBehaviour
     private CharacterController _cc;
     private Vector3 _moveVec, _rotVec, _jumpVec;
     private Quaternion quat;
-    public Targeting targetScript;
     private bool canMove;
     
 
@@ -31,15 +31,6 @@ public class ThirdPersonMovement : MonoBehaviour
                 Invoke();
                 sideAmount = Input.GetAxis(SideAxis);
                 forwardAmount = Input.GetAxis(ForwardAxis);
-                if (!targetScript.targeting && (sideAmount >= .1f || sideAmount <= -.1f || forwardAmount >= .1f ||
-                                                forwardAmount <= -.1f))
-                {
-                    headingAngle = Quaternion.LookRotation(_moveVec).eulerAngles.y;
-                    _rotVec = new Vector3(transform.rotation.x, headingAngle, transform.rotation.z);
-                    quat = Quaternion.Euler(_rotVec);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, quat, RotateSpeed * Time.deltaTime);
-                    //yield return new WaitForFixedUpdate();
-                }
             }
             else
             {
@@ -48,15 +39,12 @@ public class ThirdPersonMovement : MonoBehaviour
                 _moveVec.y = vSpeed;
                 _cc.Move(_moveVec * Time.deltaTime);
             }
+
             yield return new WaitForFixedUpdate();
         }
 
     }
 
-    public void SetMove(bool value)
-    {
-        canMove = value;
-    }
 
     public virtual void Invoke()
     {
@@ -72,5 +60,5 @@ public class ThirdPersonMovement : MonoBehaviour
         _moveVec.y = vSpeed;
         _cc.Move(_moveVec * Time.deltaTime);
     }
-
+   
 }

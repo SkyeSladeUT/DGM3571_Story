@@ -8,11 +8,23 @@
         <e p="SeniorGame" t="Include">
           <e p="CharacterMovement" t="Include">
             <e p="Scripts" t="Include">
+              <e p="JumpScript.cs" t="Include" />
               <e p="ThirdPersonMovement.cs" t="Include" />
               <e p="ThridPersonCamera.cs" t="Include" />
             </e>
           </e>
+          <e p="Magic" t="Include">
+            <e p="MagicBar.cs" t="Include" />
+            <e p="ScalableObject.cs" t="Include" />
+            <e p="ScalingMagic.cs" t="Include" />
+            <e p="ScalingScript.cs" t="Include" />
+          </e>
           <e p="ScriptableObjects" t="Include">
+            <e p="BoolData.cs" t="Include" />
+            <e p="FloatData.cs" t="Include" />
+            <e p="IntData.cs" t="Include" />
+            <e p="LimitFloatData.cs" t="Include" />
+            <e p="LimitIntData.cs" t="Include" />
             <e p="TransformData.cs" t="Include" />
             <e p="Vector3Data.cs" t="Include" />
           </e>
@@ -25,6 +37,7 @@
             <e p="Enemy_Visible.cs" t="Include" />
             <e p="In_Camera_View.cs" t="Include" />
             <e p="Targeting.cs" t="Include" />
+            <e p="TargetObject.cs" t="Include" />
           </e>
         </e>
       </e>
