@@ -25,6 +25,7 @@ public class ScalingMagic : MonoBehaviour
     public LimitFloatData MagicAmount;
     public BoolData MagicInUse;
     public float decreaseSpeed;
+    public ScalingScript scalescript;
 
     private void Start()
     {
@@ -52,10 +53,9 @@ public class ScalingMagic : MonoBehaviour
     private IEnumerator Scale()
     {
         movement.SetMove(false);
-        wm.WeaponDisable();
         timeLeft = ScaleTime;
         scaleObj.HighlightObj.SetActive(true);
-        scaleObj.HighlightObj.SetActive(true);
+        scalescript.inUse = true;
         while (MagicAmount.value > 0 && timeLeft > 0)
         {
             newScale = ScalingObj.localScale;
@@ -94,10 +94,10 @@ public class ScalingMagic : MonoBehaviour
         }
         Debug.Log("End Scale");
         MagicInUse.value = false;
+        scalescript.inUse = false;
         scaleObj.HighlightObj.SetActive(false);
         movement.SetMove(true);
         yield return new WaitForSeconds(.1f);
-        wm.WeaponEnable();
         Destroy(this);
     }
     

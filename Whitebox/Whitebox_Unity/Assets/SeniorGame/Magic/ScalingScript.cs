@@ -20,18 +20,22 @@ public class ScalingScript : WeaponBase
     public LimitFloatData MagicAmount;
     public BoolData MagicInUse;
     public float decreaseSpeed;
+    public GameObject MagicObj;
     
     
     public override void Initialize()
     {
         //any init stuff needed
+        MagicObj.SetActive(true);
         initRotation = transform.rotation.eulerAngles;
         finalScale = MagicPrefab.transform.localScale;
         increaseScale = new Vector3(ScaleIncreaseAmount, ScaleIncreaseAmount, ScaleIncreaseAmount);
         decreaseScale = new Vector3(ScaleDecreaseAmount, ScaleDecreaseAmount, ScaleDecreaseAmount);
         _waitforbutton = new WaitUntil(CheckInput);
         currWeapon = true;
-        StartCoroutine(Attack());
+        attack = Attack();
+        MagicInUse.value = false;
+        StartCoroutine(attack);
 
     }
 
@@ -39,65 +43,72 @@ public class ScalingScript : WeaponBase
     {
         while (currWeapon)
         {
-            rotDirection = initRotation;
-            rotDirection.y = transform.rotation.eulerAngles.y;
-            transform.rotation = Quaternion.Euler(rotDirection);
-            yield return _waitforbutton;
-            MagicInUse.value = true;
-            if (currWeapon && MagicAmount.value > 0)
+            if (!MagicInUse.value)
             {
-                currPower = 0;
-                currArrow = Instantiate(MagicPrefab, InitPos);
-                currArrow.transform.localScale = Vector3.zero;
-                currArrow.SetActive(true);
-                SpellBall = currArrow.GetComponent<Rigidbody>();
-                while (Input.GetButton(useButton) && MagicAmount.value > 0)
+                rotDirection = initRotation;
+                rotDirection.y = transform.rotation.eulerAngles.y;
+                transform.rotation = Quaternion.Euler(rotDirection);
+                yield return _waitforbutton;
+                inUse = true;
+                MagicInUse.value = true;
+                if (currWeapon && MagicAmount.value > 0)
                 {
-                    if (targetObj.transform != null)
+                    currPower = 0;
+                    currArrow = Instantiate(MagicPrefab, InitPos);
+                    currArrow.transform.localScale = Vector3.zero;
+                    currArrow.SetActive(true);
+                    SpellBall = currArrow.GetComponent<Rigidbody>();
+                    while (Input.GetButton(useButton) && MagicAmount.value > 0)
                     {
-                        transform.LookAt(targetObj.transform);
-                    }
-                    else
-                    {
-                        rotDirection = transform.rotation.eulerAngles;
-                        rotDirection.x = camTrans.rotation.eulerAngles.x;
-                        transform.rotation = Quaternion.Euler(rotDirection);
-                    }
-                    
-                    //Debug.Log("Current Power: " + currPower);
-                    currPower += Time.deltaTime * PowerIncreaseScale;
-                    MagicAmount.SubFloat(decreaseSpeed*Time.deltaTime);
-                    if (currPower >= MaxPower)
-                    {
-                        currPower = MaxPower;
+                        if (targetObj.transform != null)
+                        {
+                            transform.LookAt(targetObj.transform);
+                        }
+                        else
+                        {
+                            rotDirection = transform.rotation.eulerAngles;
+                            rotDirection.x = camTrans.rotation.eulerAngles.x;
+                            transform.rotation = Quaternion.Euler(rotDirection);
+                        }
+
+                        //Debug.Log("Current Power: " + currPower);
+                        currPower += Time.deltaTime * PowerIncreaseScale;
+                        MagicAmount.SubFloat(decreaseSpeed * Time.deltaTime);
+                        if (currPower >= MaxPower)
+                        {
+                            currPower = MaxPower;
+                        }
+
+                        if (currArrow.transform.localScale.x <= finalScale.x)
+                        {
+                            newScale = currArrow.transform.localScale + increaseScale * Time.deltaTime;
+                            currArrow.transform.localScale = newScale;
+                        }
+
+                        yield return _fixedUpdate;
                     }
 
-                    if (currArrow.transform.localScale.x <= finalScale.x)
+                    SpellBall.constraints = RigidbodyConstraints.None;
+                    currArrow.transform.parent = null;
+                    SpellBall.AddForce(transform.forward * currPower, ForceMode.Impulse);
+                    while (currArrow.transform.localScale.x > 0)
                     {
-                        newScale = currArrow.transform.localScale + increaseScale*Time.deltaTime;
+                        newScale = currArrow.transform.localScale - decreaseScale * Time.deltaTime;
                         currArrow.transform.localScale = newScale;
+                        yield return _fixedUpdate;
                     }
 
-                    yield return _fixedUpdate;
-                }
+                    if (!currArrow.GetComponent<ScalingMagic>().hitObj)
+                    {
+                        inUse = false;
+                        MagicInUse.value = false;
+                        Destroy(currArrow);
+                    }
 
-                SpellBall.constraints = RigidbodyConstraints.None;
-                currArrow.transform.parent = null;
-                SpellBall.AddForce(transform.forward * currPower, ForceMode.Impulse);
-                while (currArrow.transform.localScale.x > 0)
-                {
-                    newScale = currArrow.transform.localScale - decreaseScale * Time.deltaTime;
-                    currArrow.transform.localScale = newScale;
-                    yield return _fixedUpdate;
                 }
-
-                if (!currArrow.GetComponent<ScalingMagic>().hitObj)
-                {
-                    MagicInUse.value = false;
-                    Destroy(currArrow);
-                }
-
             }
+
+            yield return _fixedUpdate;
 
         }
     }
@@ -106,7 +117,10 @@ public class ScalingScript : WeaponBase
     public override void End()
     {
         //and end stuff needed
+        MagicObj.SetActive(false);
+        inUse = false;
         currWeapon = false;
+        StopCoroutine(attack);
     }
     
     private bool CheckInput()

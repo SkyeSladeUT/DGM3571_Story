@@ -7,6 +7,10 @@ public abstract class WeaponBase : MonoBehaviour
     public abstract void Initialize();
     public abstract IEnumerator Attack();
     public abstract void End();
-    [HideInInspector]
-    public bool currWeapon;
+    public KeyCode WeaponNum;
+    public Sprite WeaponSprite;
+    protected IEnumerator attack;
+    [HideInInspector] public bool currWeapon;
+    [HideInInspector] public bool inUse;
+    
 }

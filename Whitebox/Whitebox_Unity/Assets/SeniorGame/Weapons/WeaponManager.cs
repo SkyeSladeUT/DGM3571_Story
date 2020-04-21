@@ -6,11 +6,6 @@ public class WeaponManager : MonoBehaviour
 {
     public WeaponBase currentWeapon;
 
-    private void Start()
-    {
-        currentWeapon.Initialize();
-    }
-
     public void WeaponDisable()
     {
         currentWeapon.End();

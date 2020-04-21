@@ -22,6 +22,7 @@ public class BowandArrow : WeaponBase
     public TransformData targetObj;
     public Transform camTrans;
     private Vector3 rotDirection, initRotation;
+    public GameObject WeaponObj;
     
     public override void Initialize()
     {
@@ -29,7 +30,9 @@ public class BowandArrow : WeaponBase
         initRotation = transform.rotation.eulerAngles;
         _waitforbutton = new WaitUntil(CheckInput);
         currWeapon = true;
-        StartCoroutine(Attack());
+        WeaponObj.SetActive(true);
+        attack = Attack();
+        StartCoroutine(attack);
 
     }
 
@@ -41,6 +44,7 @@ public class BowandArrow : WeaponBase
             rotDirection.y = transform.rotation.eulerAngles.y;
             transform.rotation = Quaternion.Euler(rotDirection);
             yield return _waitforbutton;
+            inUse = true;
             if (currWeapon)
             {
                 currPower = 0;
@@ -69,10 +73,10 @@ public class BowandArrow : WeaponBase
 
                     yield return _fixedUpdate;
                 }
-
                 ArrowRB.constraints = RigidbodyConstraints.None;
                 currArrow.transform.parent = null;
                 ArrowRB.AddForce(transform.forward * currPower, ForceMode.Impulse);
+                inUse = false;
             }
 
         }
@@ -82,7 +86,10 @@ public class BowandArrow : WeaponBase
     public override void End()
     {
         //and end stuff needed
+        WeaponObj.SetActive(false);
         currWeapon = false;
+        inUse = false;
+        StopCoroutine(attack);
     }
     
     private bool CheckInput()

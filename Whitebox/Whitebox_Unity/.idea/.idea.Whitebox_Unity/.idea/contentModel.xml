@@ -13,11 +13,17 @@
               <e p="ThridPersonCamera.cs" t="Include" />
             </e>
           </e>
+          <e p="Inventory" t="Include">
+            <e p="WeaponSwap.cs" t="Include" />
+          </e>
           <e p="Magic" t="Include">
             <e p="MagicBar.cs" t="Include" />
             <e p="ScalableObject.cs" t="Include" />
             <e p="ScalingMagic.cs" t="Include" />
             <e p="ScalingScript.cs" t="Include" />
+          </e>
+          <e p="Melee" t="Include">
+            <e p="MeleeWeapon.cs" t="Include" />
           </e>
           <e p="ScriptableObjects" t="Include">
             <e p="BoolData.cs" t="Include" />
@@ -31,6 +37,7 @@
           <e p="Weapons" t="Include">
             <e p="BowandArrow.cs" t="Include" />
             <e p="WeaponBase.cs" t="Include" />
+            <e p="WeaponImage.cs" t="Include" />
             <e p="WeaponManager.cs" t="Include" />
           </e>
           <e p="ZTargetting" t="Include">
