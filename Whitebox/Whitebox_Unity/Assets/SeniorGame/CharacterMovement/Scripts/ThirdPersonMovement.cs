@@ -60,7 +60,10 @@ public class ThirdPersonMovement : MonoBehaviour
 
     public virtual void Invoke()
     {
-        _moveVec = new Vector3(Input.GetAxis("Horizontal")*ForwardSpeed, 0, Input.GetAxis("Vertical")*SideSpeed);
+        _moveVec = Camera.forward * ForwardSpeed * Input.GetAxis("Vertical") +
+                   Camera.right * SideSpeed * Input.GetAxis("Horizontal");
+        _moveVec.y = 0;
+        //_moveVec = new Vector3(Input.GetAxis("Horizontal")*ForwardSpeed, 0, Input.GetAxis("Vertical")*SideSpeed);
         //_moveVec = transform.TransformDirection(_moveVec);
         if (_cc.isGrounded) {
             vSpeed = -1;

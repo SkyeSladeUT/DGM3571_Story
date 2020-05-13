@@ -23,6 +23,7 @@
             <e p="ScalingScript.cs" t="Include" />
           </e>
           <e p="Melee" t="Include">
+            <e p="KnockBack.cs" t="Include" />
             <e p="MeleeWeapon.cs" t="Include" />
           </e>
           <e p="ScriptableObjects" t="Include">

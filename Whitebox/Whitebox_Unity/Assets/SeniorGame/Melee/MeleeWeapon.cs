@@ -2,80 +2,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeleeWeapon : MonoBehaviour
+public class MeleeWeapon : WeaponBase
 {
-    //Put this script on the other object (not the one that will actually get knock back)
-    public float thrust; //force
-    public float knockTime; //time
-    public bool canKnockEnemy;
-    public bool canKnockPlayer;
-    public bool PlayerIsKnockWithWeapon;
-    private Vector3 difference;
-    private Rigidbody enemyRB;
+    public GameObject knockbackObj, artObj;
+    public string useButton;
+    private WaitUntil waitforbutton;
+    public float attackActiveTime, attackcoolDownTime;
+    private WaitForSeconds attackActive, attackCool;
     
-
-
-    private void OnTriggerEnter(Collider other)
+    public override void Initialize()
     {
-        if (canKnockEnemy)
-        {
-            enemyRB = other.GetComponent<Rigidbody>();
-            if (enemyRB != null)
-            {
-                difference = enemyRB.transform.position - transform.position;
-                difference = difference.normalized * thrust;
-                enemyRB.AddForce(difference, ForceMode.Impulse);
-                StartCoroutine(KnockCo(enemyRB));
-            }
-        }
-
-        if (PlayerIsKnockWithWeapon == true)
-        {
-            Rigidbody Player = other.gameObject.GetComponent<Rigidbody>();
-            if (Player != null)
-            {
-                Vector3 difference = Player.transform.position - transform.position;
-                difference = difference.normalized * thrust;
-                Player.AddForce(difference, ForceMode.Impulse);
-                StartCoroutine(PlayerKnockBack(Player));
-            }
-        }
-
-
+        artObj.SetActive(true);
+        knockbackObj.SetActive(false);
+        waitforbutton = new WaitUntil(CheckInput);
+        attackActive = new WaitForSeconds(attackActiveTime);
+        attackCool = new WaitForSeconds(attackcoolDownTime);
+        currWeapon = true;
+        StartCoroutine(Attack());
     }
 
-    private void OnCollisionEnter(Collision other)
+    public override IEnumerator Attack()
     {
-        if (canKnockPlayer)
+        while (currWeapon)
         {
-            Rigidbody Player = other.gameObject.GetComponent<Rigidbody>();
-            if (Player != null)
-            {
-                Vector3 difference = Player.transform.position - transform.position;
-                difference = difference.normalized * thrust;
-                Player.AddForce(difference, ForceMode.Impulse);
-                StartCoroutine(PlayerKnockBack(Player));
-            }
-        }
-
-    }
-
-    private IEnumerator KnockCo(Rigidbody enemy)
-    {
-        if(enemy != null)
-        {
-            yield return new WaitForSeconds(knockTime);
-            enemy.velocity = Vector3.zero;
+            yield return waitforbutton;
+            knockbackObj.SetActive(true);
+            yield return attackActive;
+            knockbackObj.SetActive(false);
+            yield return attackCool;
         }
     }
 
-    private IEnumerator PlayerKnockBack(Rigidbody Player)
+    public override void End()
     {
-        if (Player != null)
+        artObj.SetActive(false);
+        knockbackObj.SetActive(false);
+    }
+    
+    private bool CheckInput()
+    {
+        if (Input.GetButtonDown(useButton) || !currWeapon)
         {
-            yield return new WaitForSeconds(knockTime);
-            Player.velocity = Vector3.zero;
-
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }
